@@ -1,0 +1,10 @@
+{
+  "entity_types": [ "Person", "Organization", "Department", "Project" ],
+  "relation_types": [ "WorksFor", "Manages", "LeadsProject", "BelongsTo" ],
+  "connections": [
+    [ "WorksFor", "Person", "Organization" ],
+    [ "Manages", "Person", "Department" ],
+    [ "LeadsProject", "Person", "Project" ],
+    [ "BelongsTo", "Project", "Department" ]
+  ]
+}

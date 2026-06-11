@@ -1,0 +1,96 @@
+{
+  "filename": "sample",
+  "data": [
+    {
+      "id": "p_f4b9d38e-9dbc-477d-9852-22c561476525",
+      "text": "Acme Corp Project Report",
+      "label": "H2",
+      "entities": [
+        {
+          "id": "ner-spacy--5930868905693381212-93043c46-b5e6-42bb-9b4d-648bc78e3970",
+          "start": 0,
+          "end": 9,
+          "text": "acme corp",
+          "label": "Organization",
+          "confidence": 0.95,
+          "method": "NERSpacyMatcher"
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "p_5bf29a36-4785-4dc0-902f-d1e73fdf59de",
+      "text": "Alice works for Acme Corp. Bob manages the Engineering department. Alice leads the Apollo Project, which belongs to the Engineering department.",
+      "label": "P",
+      "entities": [
+        {
+          "id": "ner-spacy--1625057276726279712-442537ea-54f0-47ac-be82-818ca01e0e8d",
+          "start": 0,
+          "end": 5,
+          "text": "alice",
+          "label": "Person",
+          "confidence": 0.95,
+          "method": "NERSpacyMatcher"
+        },
+        {
+          "id": "ner-spacy-6414577422119455270-5c72c93c-f637-4e80-87c6-aff2d882465a",
+          "start": 16,
+          "end": 25,
+          "text": "acme corp",
+          "label": "Organization",
+          "confidence": 0.95,
+          "method": "NERSpacyMatcher"
+        },
+        {
+          "id": "ner-spacy-2088140840416275895-e5b26232-116f-4f57-a3f5-14d4ec69fcd0",
+          "start": 27,
+          "end": 30,
+          "text": "bob",
+          "label": "Person",
+          "confidence": 0.95,
+          "method": "NERSpacyMatcher"
+        },
+        {
+          "id": "ner-spacy--1118779172490891473-c90f561a-be03-47d5-8cfb-05c31449ad8f",
+          "start": 43,
+          "end": 54,
+          "text": "engineering",
+          "label": "Department",
+          "confidence": 0.95,
+          "method": "NERSpacyMatcher"
+        },
+        {
+          "id": "ner-spacy--6321367524236855369-f952de13-f0d2-4448-add8-13d4b394e427",
+          "start": 67,
+          "end": 72,
+          "text": "alice",
+          "label": "Person",
+          "confidence": 0.95,
+          "method": "NERSpacyMatcher"
+        },
+        {
+          "id": "ner-spacy-6449966086580131844-4ff38473-d60c-4c13-a6fa-4d8d84411c00",
+          "start": 83,
+          "end": 97,
+          "text": "apollo project",
+          "label": "Project",
+          "confidence": 0.95,
+          "method": "NERSpacyMatcher"
+        },
+        {
+          "id": "ner-spacy--3916167189943774073-6a3a46f3-d391-47ff-bdd6-4db93e88406c",
+          "start": 120,
+          "end": 131,
+          "text": "engineering",
+          "label": "Department",
+          "confidence": 0.95,
+          "method": "NERSpacyMatcher"
+        }
+      ],
+      "relations": []
+    }
+  ],
+  "metadata": {
+    "title": "sample"
+  }
+}

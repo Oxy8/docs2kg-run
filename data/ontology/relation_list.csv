@@ -1,0 +1,5 @@
+relation,relation_type
+WorksFor,WorksFor
+Manages,Manages
+LeadsProject,LeadsProject
+BelongsTo,BelongsTo

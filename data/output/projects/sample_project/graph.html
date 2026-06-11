@@ -1,0 +1,357 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script>function neighbourhoodHighlight(params) {
+  // console.log("in nieghbourhoodhighlight");
+  allNodes = nodes.get({ returnType: "Object" });
+  // originalNodes = JSON.parse(JSON.stringify(allNodes));
+  // if something is selected:
+  if (params.nodes.length > 0) {
+    highlightActive = true;
+    var i, j;
+    var selectedNode = params.nodes[0];
+    var degrees = 2;
+
+    // mark all nodes as hard to read.
+    for (let nodeId in allNodes) {
+      // nodeColors[nodeId] = allNodes[nodeId].color;
+      allNodes[nodeId].color = "rgba(200,200,200,0.5)";
+      if (allNodes[nodeId].hiddenLabel === undefined) {
+        allNodes[nodeId].hiddenLabel = allNodes[nodeId].label;
+        allNodes[nodeId].label = undefined;
+      }
+    }
+    var connectedNodes = network.getConnectedNodes(selectedNode);
+    var allConnectedNodes = [];
+
+    // get the second degree nodes
+    for (i = 1; i < degrees; i++) {
+      for (j = 0; j < connectedNodes.length; j++) {
+        allConnectedNodes = allConnectedNodes.concat(
+          network.getConnectedNodes(connectedNodes[j])
+        );
+      }
+    }
+
+    // all second degree nodes get a different color and their label back
+    for (i = 0; i < allConnectedNodes.length; i++) {
+      // allNodes[allConnectedNodes[i]].color = "pink";
+      allNodes[allConnectedNodes[i]].color = "rgba(150,150,150,0.75)";
+      if (allNodes[allConnectedNodes[i]].hiddenLabel !== undefined) {
+        allNodes[allConnectedNodes[i]].label =
+          allNodes[allConnectedNodes[i]].hiddenLabel;
+        allNodes[allConnectedNodes[i]].hiddenLabel = undefined;
+      }
+    }
+
+    // all first degree nodes get their own color and their label back
+    for (i = 0; i < connectedNodes.length; i++) {
+      // allNodes[connectedNodes[i]].color = undefined;
+      allNodes[connectedNodes[i]].color = nodeColors[connectedNodes[i]];
+      if (allNodes[connectedNodes[i]].hiddenLabel !== undefined) {
+        allNodes[connectedNodes[i]].label =
+          allNodes[connectedNodes[i]].hiddenLabel;
+        allNodes[connectedNodes[i]].hiddenLabel = undefined;
+      }
+    }
+
+    // the main node gets its own color and its label back.
+    // allNodes[selectedNode].color = undefined;
+    allNodes[selectedNode].color = nodeColors[selectedNode];
+    if (allNodes[selectedNode].hiddenLabel !== undefined) {
+      allNodes[selectedNode].label = allNodes[selectedNode].hiddenLabel;
+      allNodes[selectedNode].hiddenLabel = undefined;
+    }
+  } else if (highlightActive === true) {
+    // console.log("highlightActive was true");
+    // reset all nodes
+    for (let nodeId in allNodes) {
+      // allNodes[nodeId].color = "purple";
+      allNodes[nodeId].color = nodeColors[nodeId];
+      // delete allNodes[nodeId].color;
+      if (allNodes[nodeId].hiddenLabel !== undefined) {
+        allNodes[nodeId].label = allNodes[nodeId].hiddenLabel;
+        allNodes[nodeId].hiddenLabel = undefined;
+      }
+    }
+    highlightActive = false;
+  }
+
+  // transform the object into an array
+  var updateArray = [];
+  if (params.nodes.length > 0) {
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        // console.log(allNodes[nodeId]);
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  } else {
+    // console.log("Nothing was selected");
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        // console.log(allNodes[nodeId]);
+        // allNodes[nodeId].color = {};
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  }
+}
+
+function filterHighlight(params) {
+  allNodes = nodes.get({ returnType: "Object" });
+  // if something is selected:
+  if (params.nodes.length > 0) {
+    filterActive = true;
+    let selectedNodes = params.nodes;
+
+    // hiding all nodes and saving the label
+    for (let nodeId in allNodes) {
+      allNodes[nodeId].hidden = true;
+      if (allNodes[nodeId].savedLabel === undefined) {
+        allNodes[nodeId].savedLabel = allNodes[nodeId].label;
+        allNodes[nodeId].label = undefined;
+      }
+    }
+
+    for (let i=0; i < selectedNodes.length; i++) {
+      allNodes[selectedNodes[i]].hidden = false;
+      if (allNodes[selectedNodes[i]].savedLabel !== undefined) {
+        allNodes[selectedNodes[i]].label = allNodes[selectedNodes[i]].savedLabel;
+        allNodes[selectedNodes[i]].savedLabel = undefined;
+      }
+    }
+
+  } else if (filterActive === true) {
+    // reset all nodes
+    for (let nodeId in allNodes) {
+      allNodes[nodeId].hidden = false;
+      if (allNodes[nodeId].savedLabel !== undefined) {
+        allNodes[nodeId].label = allNodes[nodeId].savedLabel;
+        allNodes[nodeId].savedLabel = undefined;
+      }
+    }
+    filterActive = false;
+  }
+
+  // transform the object into an array
+  var updateArray = [];
+  if (params.nodes.length > 0) {
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  } else {
+    for (let nodeId in allNodes) {
+      if (allNodes.hasOwnProperty(nodeId)) {
+        updateArray.push(allNodes[nodeId]);
+      }
+    }
+    nodes.update(updateArray);
+  }
+}
+
+function selectNode(nodes) {
+  network.selectNodes(nodes);
+  neighbourhoodHighlight({ nodes: nodes });
+  return nodes;
+}
+
+function selectNodes(nodes) {
+  network.selectNodes(nodes);
+  filterHighlight({nodes: nodes});
+  return nodes;
+}
+
+function highlightFilter(filter) {
+  let selectedNodes = []
+  let selectedProp = filter['property']
+  if (filter['item'] === 'node') {
+    let allNodes = nodes.get({ returnType: "Object" });
+    for (let nodeId in allNodes) {
+      if (allNodes[nodeId][selectedProp] && filter['value'].includes((allNodes[nodeId][selectedProp]).toString())) {
+        selectedNodes.push(nodeId)
+      }
+    }
+  }
+  else if (filter['item'] === 'edge'){
+    let allEdges = edges.get({returnType: 'object'});
+    // check if the selected property exists for selected edge and select the nodes connected to the edge
+    for (let edge in allEdges) {
+      if (allEdges[edge][selectedProp] && filter['value'].includes((allEdges[edge][selectedProp]).toString())) {
+        selectedNodes.push(allEdges[edge]['from'])
+        selectedNodes.push(allEdges[edge]['to'])
+      }
+    }
+  }
+  selectNodes(selectedNodes)
+}</script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+            
+            
+            
+            
+            
+
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 900px;
+                 background-color: #1a1a2e;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"font": {"color": "#e0e0e0"}, "group": "File", "id": "sample_project_complex_sample", "label": "[File]\ncomplex_sample", "shape": "diamond", "size": 40, "title": "\u003cb\u003eType:\u003c/b\u003e File\u003cbr\u003e\u003cb\u003eText:\u003c/b\u003e complex_sample\u003cbr\u003e\u003cb\u003eID:\u003c/b\u003e sample_project_complex_sample"}, {"font": {"color": "#e0e0e0"}, "group": "H2", "id": "p_3ad30fff-9a61-4e24-bebe-d454ae8dc2ef", "label": "[H2]\nAcme Corp Executive Repor\u2026", "shape": "box", "size": 30, "title": "\u003cb\u003eType:\u003c/b\u003e H2\u003cbr\u003e\u003cb\u003eText:\u003c/b\u003e Acme Corp Executive Report\u003cbr\u003e\u003cb\u003eID:\u003c/b\u003e p_3ad30fff-9a61-4e24-bebe-d454ae8dc2ef"}, {"font": {"color": "#e0e0e0"}, "group": "H2", "id": "p_e2de71e2-894f-4d35-9017-163b121caba2", "label": "[H2]\n1. Organizational Structu\u2026", "shape": "box", "size": 30, "title": "\u003cb\u003eType:\u003c/b\u003e H2\u003cbr\u003e\u003cb\u003eText:\u003c/b\u003e 1. Organizational Structure\u003cbr\u003e\u003cb\u003eID:\u003c/b\u003e p_e2de71e2-894f-4d35-9017-163b121caba2"}, {"font": {"color": "#e0e0e0"}, "group": "P", "id": "p_909803a6-ba6f-44b1-a304-1dc62759259f", "label": "[P]\nBelow is the hierarchical\u2026", "shape": "ellipse", "size": 18, "title": "\u003cb\u003eType:\u003c/b\u003e P\u003cbr\u003e\u003cb\u003eText:\u003c/b\u003e Below is the hierarchical nesting mapping of departments and their active allocations.\u003cbr\u003e\u003cb\u003eID:\u003c/b\u003e p_909803a6-ba6f-44b1-a304-1dc62759259f"}, {"font": {"color": "#e0e0e0"}, "group": "TABLE", "id": "p_ea37b63f-2034-42bc-a7e0-0acb50e82a13", "label": "[TABLE]\nDepartment Details \u0026 Proj\u2026", "shape": "triangle", "size": 18, "title": "\u003cb\u003eType:\u003c/b\u003e TABLE\u003cbr\u003e\u003cb\u003eText:\u003c/b\u003e Department\nDetails \u0026 Projects\nDetails \u0026 Projects\nDetails \u0026 Projects\n\n\n\n\nEngineering\nProject Name Apollo Project\nLead Alice\nBudget $1.2M\n\n\n\nAres Initiative\nCharlie\n$800K\n\n\nOperations\nService\nProvider\nS\u003cbr\u003e\u003cb\u003eID:\u003c/b\u003e p_ea37b63f-2034-42bc-a7e0-0acb50e82a13"}, {"font": {"color": "#e0e0e0"}, "group": "TR", "id": "p_073ef4d1-e778-46c4-b69c-0be78177205e", "label": "[TR]\nDepartment Details \u0026 Proj\u2026", "shape": "triangle", "size": 18, "title": "\u003cb\u003eType:\u003c/b\u003e TR\u003cbr\u003e\u003cb\u003eText:\u003c/b\u003e Department\nDetails \u0026 Projects\nDetails \u0026 Projects\nDetails \u0026 Projects\u003cbr\u003e\u003cb\u003eID:\u003c/b\u003e p_073ef4d1-e778-46c4-b69c-0be78177205e"}, {"font": {"color": "#e0e0e0"}, "group": "TH", "id": "p_a47d3806-fa07-45b7-b126-b27bf50aeb9f", "label": "[TH]\nDepartment", "shape": "dot", "size": 18, "title": "\u003cb\u003eType:\u003c/b\u003e TH\u003cbr\u003e\u003cb\u003eText:\u003c/b\u003e Department\u003cbr\u003e\u003cb\u003eID:\u003c/b\u003e p_a47d3806-fa07-45b7-b126-b27bf50aeb9f"}, {"font": {"color": "#e0e0e0"}, "group": "TH", "id": "p_7d0ddb31-3c55-4812-803b-ba1d9cc9e4c8", "label": "[TH]\nDetails \u0026 Projects", "shape": "dot", "size": 18, "title": "\u003cb\u003eType:\u003c/b\u003e TH\u003cbr\u003e\u003cb\u003eText:\u003c/b\u003e Details \u0026 Projects\u003cbr\u003e\u003cb\u003eID:\u003c/b\u003e p_7d0ddb31-3c55-4812-803b-ba1d9cc9e4c8"}, {"font": {"color": "#e0e0e0"}, "group": "TH", "id": "p_7bdafee3-238a-491e-b610-e27921901302", "label": "[TH]\nDetails \u0026 Projects", "shape": "dot", "size": 18, "title": "\u003cb\u003eType:\u003c/b\u003e TH\u003cbr\u003e\u003cb\u003eText:\u003c/b\u003e Details \u0026 Projects\u003cbr\u003e\u003cb\u003eID:\u003c/b\u003e p_7bdafee3-238a-491e-b610-e27921901302"}, {"font": {"color": "#e0e0e0"}, "group": "TH", "id": "p_6efa1926-feb5-4740-ac37-2e1c5ff461d9", "label": "[TH]\nDetails \u0026 Projects", "shape": "dot", "size": 18, "title": "\u003cb\u003eType:\u003c/b\u003e TH\u003cbr\u003e\u003cb\u003eText:\u003c/b\u003e Details \u0026 Projects\u003cbr\u003e\u003cb\u003eID:\u003c/b\u003e p_6efa1926-feb5-4740-ac37-2e1c5ff461d9"}, {"font": {"color": "#e0e0e0"}, "group": "TR", "id": "p_decd47c0-166e-4fbe-8b76-ad120b58ddcf", "label": "[TR]\nEngineering Project Name \u2026", "shape": "triangle", "size": 18, "title": "\u003cb\u003eType:\u003c/b\u003e TR\u003cbr\u003e\u003cb\u003eText:\u003c/b\u003e Engineering\nProject Name Apollo Project\nLead Alice\nBudget $1.2M\u003cbr\u003e\u003cb\u003eID:\u003c/b\u003e p_decd47c0-166e-4fbe-8b76-ad120b58ddcf"}, {"font": {"color": "#e0e0e0"}, "group": "TD", "id": "p_304f79a5-5419-462b-a3ae-e9b2ca94d42e", "label": "[TD]\nEngineering", "shape": "dot", "size": 18, "title": "\u003cb\u003eType:\u003c/b\u003e TD\u003cbr\u003e\u003cb\u003eText:\u003c/b\u003e Engineering\u003cbr\u003e\u003cb\u003eID:\u003c/b\u003e p_304f79a5-5419-462b-a3ae-e9b2ca94d42e"}, {"font": {"color": "#e0e0e0"}, "group": "TD", "id": "p_2c8d2ccf-d3f4-441c-919b-3904a2e4f9fc", "label": "[TD]\nProject Name Apollo Proje\u2026", "shape": "dot", "size": 18, "title": "\u003cb\u003eType:\u003c/b\u003e TD\u003cbr\u003e\u003cb\u003eText:\u003c/b\u003e Project Name Apollo Project\u003cbr\u003e\u003cb\u003eID:\u003c/b\u003e p_2c8d2ccf-d3f4-441c-919b-3904a2e4f9fc"}, {"font": {"color": "#e0e0e0"}, "group": "TD", "id": "p_0d30ed5c-28bc-4980-bbc7-4aee89efd23f", "label": "[TD]\nLead Alice", "shape": "dot", "size": 18, "title": "\u003cb\u003eType:\u003c/b\u003e TD\u003cbr\u003e\u003cb\u003eText:\u003c/b\u003e Lead Alice\u003cbr\u003e\u003cb\u003eID:\u003c/b\u003e p_0d30ed5c-28bc-4980-bbc7-4aee89efd23f"}, {"font": {"color": "#e0e0e0"}, "group": "TD", "id": "p_6cd84d72-7c5f-4827-ad48-d51ebf57b950", "label": "[TD]\nBudget $1.2M", "shape": "dot", "size": 18, "title": "\u003cb\u003eType:\u003c/b\u003e TD\u003cbr\u003e\u003cb\u003eText:\u003c/b\u003e Budget $1.2M\u003cbr\u003e\u003cb\u003eID:\u003c/b\u003e p_6cd84d72-7c5f-4827-ad48-d51ebf57b950"}, {"font": {"color": "#e0e0e0"}, "group": "TR", "id": "p_3164cfe8-45f2-4916-a7a1-52ccc9c1f420", "label": "[TR]\nAres Initiative Charlie $\u2026", "shape": "triangle", "size": 18, "title": "\u003cb\u003eType:\u003c/b\u003e TR\u003cbr\u003e\u003cb\u003eText:\u003c/b\u003e Ares Initiative\nCharlie\n$800K\u003cbr\u003e\u003cb\u003eID:\u003c/b\u003e p_3164cfe8-45f2-4916-a7a1-52ccc9c1f420"}, {"font": {"color": "#e0e0e0"}, "group": "TD", "id": "p_e2928920-cd29-4d11-bef1-b2673f2d745b", "label": "[TD]\nAres Initiative", "shape": "dot", "size": 18, "title": "\u003cb\u003eType:\u003c/b\u003e TD\u003cbr\u003e\u003cb\u003eText:\u003c/b\u003e Ares Initiative\u003cbr\u003e\u003cb\u003eID:\u003c/b\u003e p_e2928920-cd29-4d11-bef1-b2673f2d745b"}, {"font": {"color": "#e0e0e0"}, "group": "TD", "id": "p_93ec14cf-ea53-4cbb-b91b-a65c1a4febf1", "label": "[TD]\nCharlie", "shape": "dot", "size": 18, "title": "\u003cb\u003eType:\u003c/b\u003e TD\u003cbr\u003e\u003cb\u003eText:\u003c/b\u003e Charlie\u003cbr\u003e\u003cb\u003eID:\u003c/b\u003e p_93ec14cf-ea53-4cbb-b91b-a65c1a4febf1"}, {"font": {"color": "#e0e0e0"}, "group": "TD", "id": "p_731d1103-2821-4e67-9d39-e0cc5210fda0", "label": "[TD]\n$800K", "shape": "dot", "size": 18, "title": "\u003cb\u003eType:\u003c/b\u003e TD\u003cbr\u003e\u003cb\u003eText:\u003c/b\u003e $800K\u003cbr\u003e\u003cb\u003eID:\u003c/b\u003e p_731d1103-2821-4e67-9d39-e0cc5210fda0"}, {"font": {"color": "#e0e0e0"}, "group": "TR", "id": "p_aa9a1d4e-ca08-41f4-84e5-50622cea1f89", "label": "[TR]\nOperations Service Provid\u2026", "shape": "triangle", "size": 18, "title": "\u003cb\u003eType:\u003c/b\u003e TR\u003cbr\u003e\u003cb\u003eText:\u003c/b\u003e Operations\nService\nProvider\nSLA\u003cbr\u003e\u003cb\u003eID:\u003c/b\u003e p_aa9a1d4e-ca08-41f4-84e5-50622cea1f89"}, {"font": {"color": "#e0e0e0"}, "group": "TD", "id": "p_80b6d71e-ce4d-471a-bb64-2b72898070b5", "label": "[TD]\nOperations", "shape": "dot", "size": 18, "title": "\u003cb\u003eType:\u003c/b\u003e TD\u003cbr\u003e\u003cb\u003eText:\u003c/b\u003e Operations\u003cbr\u003e\u003cb\u003eID:\u003c/b\u003e p_80b6d71e-ce4d-471a-bb64-2b72898070b5"}, {"font": {"color": "#e0e0e0"}, "group": "TD", "id": "p_9d617c3b-588d-46ff-9f76-87ae50b36dae", "label": "[TD]\nService", "shape": "dot", "size": 18, "title": "\u003cb\u003eType:\u003c/b\u003e TD\u003cbr\u003e\u003cb\u003eText:\u003c/b\u003e Service\u003cbr\u003e\u003cb\u003eID:\u003c/b\u003e p_9d617c3b-588d-46ff-9f76-87ae50b36dae"}, {"font": {"color": "#e0e0e0"}, "group": "TD", "id": "p_e8028753-667e-4a79-87f2-3324351661f5", "label": "[TD]\nProvider", "shape": "dot", "size": 18, "title": "\u003cb\u003eType:\u003c/b\u003e TD\u003cbr\u003e\u003cb\u003eText:\u003c/b\u003e Provider\u003cbr\u003e\u003cb\u003eID:\u003c/b\u003e p_e8028753-667e-4a79-87f2-3324351661f5"}, {"font": {"color": "#e0e0e0"}, "group": "TD", "id": "p_ce4f1bba-4961-4f30-aff7-3aa245346c79", "label": "[TD]\nSLA", "shape": "dot", "size": 18, "title": "\u003cb\u003eType:\u003c/b\u003e TD\u003cbr\u003e\u003cb\u003eText:\u003c/b\u003e SLA\u003cbr\u003e\u003cb\u003eID:\u003c/b\u003e p_ce4f1bba-4961-4f30-aff7-3aa245346c79"}, {"font": {"color": "#e0e0e0"}, "group": "TR", "id": "p_7fcf3cbc-1d01-4790-88cb-77f97d4ad8f0", "label": "[TR]\nOperations Cloud Hosting \u2026", "shape": "triangle", "size": 18, "title": "\u003cb\u003eType:\u003c/b\u003e TR\u003cbr\u003e\u003cb\u003eText:\u003c/b\u003e Operations\nCloud Hosting\nAcme Corp\n99.9%\u003cbr\u003e\u003cb\u003eID:\u003c/b\u003e p_7fcf3cbc-1d01-4790-88cb-77f97d4ad8f0"}, {"font": {"color": "#e0e0e0"}, "group": "TD", "id": "p_c1c2270c-2d03-4225-beea-13f46c4f4bcb", "label": "[TD]\nOperations", "shape": "dot", "size": 18, "title": "\u003cb\u003eType:\u003c/b\u003e TD\u003cbr\u003e\u003cb\u003eText:\u003c/b\u003e Operations\u003cbr\u003e\u003cb\u003eID:\u003c/b\u003e p_c1c2270c-2d03-4225-beea-13f46c4f4bcb"}, {"font": {"color": "#e0e0e0"}, "group": "TD", "id": "p_044ffc2f-ade7-4364-9495-99343dc427bd", "label": "[TD]\nCloud Hosting", "shape": "dot", "size": 18, "title": "\u003cb\u003eType:\u003c/b\u003e TD\u003cbr\u003e\u003cb\u003eText:\u003c/b\u003e Cloud Hosting\u003cbr\u003e\u003cb\u003eID:\u003c/b\u003e p_044ffc2f-ade7-4364-9495-99343dc427bd"}, {"font": {"color": "#e0e0e0"}, "group": "TD", "id": "p_48c9259c-bc37-4b13-b0c7-aa1beaa87bec", "label": "[TD]\nAcme Corp", "shape": "dot", "size": 18, "title": "\u003cb\u003eType:\u003c/b\u003e TD\u003cbr\u003e\u003cb\u003eText:\u003c/b\u003e Acme Corp\u003cbr\u003e\u003cb\u003eID:\u003c/b\u003e p_48c9259c-bc37-4b13-b0c7-aa1beaa87bec"}, {"font": {"color": "#e0e0e0"}, "group": "TD", "id": "p_50270e98-40ac-494a-a6ef-9c62d46201d4", "label": "[TD]\n99.9%", "shape": "dot", "size": 18, "title": "\u003cb\u003eType:\u003c/b\u003e TD\u003cbr\u003e\u003cb\u003eText:\u003c/b\u003e 99.9%\u003cbr\u003e\u003cb\u003eID:\u003c/b\u003e p_50270e98-40ac-494a-a6ef-9c62d46201d4"}, {"font": {"color": "#e0e0e0"}, "group": "TR", "id": "p_37ba6fc5-4181-426f-89cc-f44511281409", "label": "[TR]\nOperations Security Audit\u2026", "shape": "triangle", "size": 18, "title": "\u003cb\u003eType:\u003c/b\u003e TR\u003cbr\u003e\u003cb\u003eText:\u003c/b\u003e Operations\nSecurity Audit\nSafeGuard\n99.99%\u003cbr\u003e\u003cb\u003eID:\u003c/b\u003e p_37ba6fc5-4181-426f-89cc-f44511281409"}, {"font": {"color": "#e0e0e0"}, "group": "TD", "id": "p_26b6fa39-dcf8-49b3-9a88-995db4a9d67d", "label": "[TD]\nOperations", "shape": "dot", "size": 18, "title": "\u003cb\u003eType:\u003c/b\u003e TD\u003cbr\u003e\u003cb\u003eText:\u003c/b\u003e Operations\u003cbr\u003e\u003cb\u003eID:\u003c/b\u003e p_26b6fa39-dcf8-49b3-9a88-995db4a9d67d"}, {"font": {"color": "#e0e0e0"}, "group": "TD", "id": "p_1cbad822-c501-4ca5-97ba-0e6dc493578e", "label": "[TD]\nSecurity Audit", "shape": "dot", "size": 18, "title": "\u003cb\u003eType:\u003c/b\u003e TD\u003cbr\u003e\u003cb\u003eText:\u003c/b\u003e Security Audit\u003cbr\u003e\u003cb\u003eID:\u003c/b\u003e p_1cbad822-c501-4ca5-97ba-0e6dc493578e"}, {"font": {"color": "#e0e0e0"}, "group": "TD", "id": "p_8931d45a-1f80-43df-a8a1-7806289fe189", "label": "[TD]\nSafeGuard", "shape": "dot", "size": 18, "title": "\u003cb\u003eType:\u003c/b\u003e TD\u003cbr\u003e\u003cb\u003eText:\u003c/b\u003e SafeGuard\u003cbr\u003e\u003cb\u003eID:\u003c/b\u003e p_8931d45a-1f80-43df-a8a1-7806289fe189"}, {"font": {"color": "#e0e0e0"}, "group": "TD", "id": "p_c6c45e84-0564-4c14-ae1f-c3ee4e0f107d", "label": "[TD]\n99.99%", "shape": "dot", "size": 18, "title": "\u003cb\u003eType:\u003c/b\u003e TD\u003cbr\u003e\u003cb\u003eText:\u003c/b\u003e 99.99%\u003cbr\u003e\u003cb\u003eID:\u003c/b\u003e p_c6c45e84-0564-4c14-ae1f-c3ee4e0f107d"}, {"font": {"color": "#e0e0e0"}, "group": "H2", "id": "p_ae27b759-db84-477f-a442-046958e06867", "label": "[H2]\n2. Strategic Goals", "shape": "box", "size": 30, "title": "\u003cb\u003eType:\u003c/b\u003e H2\u003cbr\u003e\u003cb\u003eText:\u003c/b\u003e 2. Strategic Goals\u003cbr\u003e\u003cb\u003eID:\u003c/b\u003e p_ae27b759-db84-477f-a442-046958e06867"}, {"font": {"color": "#e0e0e0"}, "group": "P", "id": "p_2889cb3a-1727-4828-bee2-658a9fb92f2d", "label": "[P]\nOperations are supervised\u2026", "shape": "ellipse", "size": 18, "title": "\u003cb\u003eType:\u003c/b\u003e P\u003cbr\u003e\u003cb\u003eText:\u003c/b\u003e Operations are supervised by Bob. They manage beta group clients. Alice manages the Apollo Project and leads strategic operations.\u003cbr\u003e\u003cb\u003eID:\u003c/b\u003e p_2889cb3a-1727-4828-bee2-658a9fb92f2d"}, {"font": {"color": "#e0e0e0"}, "group": "ORGANIZATION", "id": "ner-spacy--7111801788919797324-1bb0d58e-4434-4e75-8633-d52ae4c5864d", "label": "[ORGANIZATION]\nacme corp", "shape": "star", "size": 25, "title": "\u003cb\u003eType:\u003c/b\u003e ORGANIZATION\u003cbr\u003e\u003cb\u003eText:\u003c/b\u003e acme corp\u003cbr\u003e\u003cb\u003eID:\u003c/b\u003e ner-spacy--7111801788919797324-1bb0d58e-4434-4e75-8633-d52ae4c5864d\u003cbr\u003e\u003cb\u003eMethod:\u003c/b\u003e NERSpacyMatcher\u003cbr\u003e\u003cb\u003eConfidence:\u003c/b\u003e 0.95"}, {"font": {"color": "#e0e0e0"}, "group": "DEPARTMENT", "id": "ner-spacy--769683519652656321-8059290d-2b62-4434-86f4-a57b9a4e4266", "label": "[DEPARTMENT]\nengineering", "shape": "star", "size": 25, "title": "\u003cb\u003eType:\u003c/b\u003e DEPARTMENT\u003cbr\u003e\u003cb\u003eText:\u003c/b\u003e engineering\u003cbr\u003e\u003cb\u003eID:\u003c/b\u003e ner-spacy--769683519652656321-8059290d-2b62-4434-86f4-a57b9a4e4266\u003cbr\u003e\u003cb\u003eMethod:\u003c/b\u003e NERSpacyMatcher\u003cbr\u003e\u003cb\u003eConfidence:\u003c/b\u003e 0.95"}, {"font": {"color": "#e0e0e0"}, "group": "PROJECT", "id": "ner-spacy--739479512998675860-36253c0b-56b3-4f8b-9297-4e8c8a447597", "label": "[PROJECT]\napollo project", "shape": "star", "size": 25, "title": "\u003cb\u003eType:\u003c/b\u003e PROJECT\u003cbr\u003e\u003cb\u003eText:\u003c/b\u003e apollo project\u003cbr\u003e\u003cb\u003eID:\u003c/b\u003e ner-spacy--739479512998675860-36253c0b-56b3-4f8b-9297-4e8c8a447597\u003cbr\u003e\u003cb\u003eMethod:\u003c/b\u003e NERSpacyMatcher\u003cbr\u003e\u003cb\u003eConfidence:\u003c/b\u003e 0.95"}, {"font": {"color": "#e0e0e0"}, "group": "PERSON", "id": "ner-spacy-2114093064939178576-5982bcb2-1706-46ab-84e6-797ba9b10fb4", "label": "[PERSON]\nalice", "shape": "star", "size": 25, "title": "\u003cb\u003eType:\u003c/b\u003e PERSON\u003cbr\u003e\u003cb\u003eText:\u003c/b\u003e alice\u003cbr\u003e\u003cb\u003eID:\u003c/b\u003e ner-spacy-2114093064939178576-5982bcb2-1706-46ab-84e6-797ba9b10fb4\u003cbr\u003e\u003cb\u003eMethod:\u003c/b\u003e NERSpacyMatcher\u003cbr\u003e\u003cb\u003eConfidence:\u003c/b\u003e 0.95"}, {"font": {"color": "#e0e0e0"}, "group": "PERSON", "id": "ner-spacy--5620121989283618061-a0530946-49ee-4c39-9417-0e0a555ed1a0", "label": "[PERSON]\nbob", "shape": "star", "size": 25, "title": "\u003cb\u003eType:\u003c/b\u003e PERSON\u003cbr\u003e\u003cb\u003eText:\u003c/b\u003e bob\u003cbr\u003e\u003cb\u003eID:\u003c/b\u003e ner-spacy--5620121989283618061-a0530946-49ee-4c39-9417-0e0a555ed1a0\u003cbr\u003e\u003cb\u003eMethod:\u003c/b\u003e NERSpacyMatcher\u003cbr\u003e\u003cb\u003eConfidence:\u003c/b\u003e 0.95"}]);
+                  edges = new vis.DataSet([{"arrows": "to", "color": "#555555", "dashes": false, "from": "sample_project_complex_sample", "label": "", "title": "CONTAINS", "to": "p_3ad30fff-9a61-4e24-bebe-d454ae8dc2ef", "width": 1.5}, {"arrows": "to", "color": "#555555", "dashes": false, "from": "sample_project_complex_sample", "label": "", "title": "CONTAINS", "to": "p_e2de71e2-894f-4d35-9017-163b121caba2", "width": 1.5}, {"arrows": "to", "color": "#888888", "dashes": true, "from": "p_3ad30fff-9a61-4e24-bebe-d454ae8dc2ef", "label": "", "title": "NEXT", "to": "p_e2de71e2-894f-4d35-9017-163b121caba2", "width": 1}, {"arrows": "to", "color": "#555555", "dashes": false, "from": "p_e2de71e2-894f-4d35-9017-163b121caba2", "label": "", "title": "CONTAINS", "to": "p_909803a6-ba6f-44b1-a304-1dc62759259f", "width": 1.5}, {"arrows": "to", "color": "#555555", "dashes": false, "from": "p_909803a6-ba6f-44b1-a304-1dc62759259f", "label": "", "title": "CONTAINS", "to": "p_ea37b63f-2034-42bc-a7e0-0acb50e82a13", "width": 1.5}, {"arrows": "to", "color": "#555555", "dashes": false, "from": "p_ea37b63f-2034-42bc-a7e0-0acb50e82a13", "label": "", "title": "CONTAINS", "to": "p_073ef4d1-e778-46c4-b69c-0be78177205e", "width": 1.5}, {"arrows": "to", "color": "#555555", "dashes": false, "from": "p_073ef4d1-e778-46c4-b69c-0be78177205e", "label": "", "title": "CONTAINS", "to": "p_a47d3806-fa07-45b7-b126-b27bf50aeb9f", "width": 1.5}, {"arrows": "to", "color": "#555555", "dashes": false, "from": "p_e2de71e2-894f-4d35-9017-163b121caba2", "label": "", "title": "CONTAINS", "to": "p_7d0ddb31-3c55-4812-803b-ba1d9cc9e4c8", "width": 1.5}, {"arrows": "to", "color": "#888888", "dashes": true, "from": "p_a47d3806-fa07-45b7-b126-b27bf50aeb9f", "label": "", "title": "NEXT", "to": "p_7d0ddb31-3c55-4812-803b-ba1d9cc9e4c8", "width": 1}, {"arrows": "to", "color": "#555555", "dashes": false, "from": "p_e2de71e2-894f-4d35-9017-163b121caba2", "label": "", "title": "CONTAINS", "to": "p_7bdafee3-238a-491e-b610-e27921901302", "width": 1.5}, {"arrows": "to", "color": "#888888", "dashes": true, "from": "p_7d0ddb31-3c55-4812-803b-ba1d9cc9e4c8", "label": "", "title": "NEXT", "to": "p_7bdafee3-238a-491e-b610-e27921901302", "width": 1}, {"arrows": "to", "color": "#555555", "dashes": false, "from": "p_e2de71e2-894f-4d35-9017-163b121caba2", "label": "", "title": "CONTAINS", "to": "p_6efa1926-feb5-4740-ac37-2e1c5ff461d9", "width": 1.5}, {"arrows": "to", "color": "#888888", "dashes": true, "from": "p_7bdafee3-238a-491e-b610-e27921901302", "label": "", "title": "NEXT", "to": "p_6efa1926-feb5-4740-ac37-2e1c5ff461d9", "width": 1}, {"arrows": "to", "color": "#555555", "dashes": false, "from": "p_e2de71e2-894f-4d35-9017-163b121caba2", "label": "", "title": "CONTAINS", "to": "p_decd47c0-166e-4fbe-8b76-ad120b58ddcf", "width": 1.5}, {"arrows": "to", "color": "#555555", "dashes": false, "from": "p_decd47c0-166e-4fbe-8b76-ad120b58ddcf", "label": "", "title": "CONTAINS", "to": "p_304f79a5-5419-462b-a3ae-e9b2ca94d42e", "width": 1.5}, {"arrows": "to", "color": "#555555", "dashes": false, "from": "p_e2de71e2-894f-4d35-9017-163b121caba2", "label": "", "title": "CONTAINS", "to": "p_2c8d2ccf-d3f4-441c-919b-3904a2e4f9fc", "width": 1.5}, {"arrows": "to", "color": "#888888", "dashes": true, "from": "p_304f79a5-5419-462b-a3ae-e9b2ca94d42e", "label": "", "title": "NEXT", "to": "p_2c8d2ccf-d3f4-441c-919b-3904a2e4f9fc", "width": 1}, {"arrows": "to", "color": "#555555", "dashes": false, "from": "p_e2de71e2-894f-4d35-9017-163b121caba2", "label": "", "title": "CONTAINS", "to": "p_0d30ed5c-28bc-4980-bbc7-4aee89efd23f", "width": 1.5}, {"arrows": "to", "color": "#888888", "dashes": true, "from": "p_2c8d2ccf-d3f4-441c-919b-3904a2e4f9fc", "label": "", "title": "NEXT", "to": "p_0d30ed5c-28bc-4980-bbc7-4aee89efd23f", "width": 1}, {"arrows": "to", "color": "#555555", "dashes": false, "from": "p_e2de71e2-894f-4d35-9017-163b121caba2", "label": "", "title": "CONTAINS", "to": "p_6cd84d72-7c5f-4827-ad48-d51ebf57b950", "width": 1.5}, {"arrows": "to", "color": "#888888", "dashes": true, "from": "p_0d30ed5c-28bc-4980-bbc7-4aee89efd23f", "label": "", "title": "NEXT", "to": "p_6cd84d72-7c5f-4827-ad48-d51ebf57b950", "width": 1}, {"arrows": "to", "color": "#555555", "dashes": false, "from": "p_e2de71e2-894f-4d35-9017-163b121caba2", "label": "", "title": "CONTAINS", "to": "p_3164cfe8-45f2-4916-a7a1-52ccc9c1f420", "width": 1.5}, {"arrows": "to", "color": "#555555", "dashes": false, "from": "p_3164cfe8-45f2-4916-a7a1-52ccc9c1f420", "label": "", "title": "CONTAINS", "to": "p_e2928920-cd29-4d11-bef1-b2673f2d745b", "width": 1.5}, {"arrows": "to", "color": "#555555", "dashes": false, "from": "p_e2de71e2-894f-4d35-9017-163b121caba2", "label": "", "title": "CONTAINS", "to": "p_93ec14cf-ea53-4cbb-b91b-a65c1a4febf1", "width": 1.5}, {"arrows": "to", "color": "#888888", "dashes": true, "from": "p_e2928920-cd29-4d11-bef1-b2673f2d745b", "label": "", "title": "NEXT", "to": "p_93ec14cf-ea53-4cbb-b91b-a65c1a4febf1", "width": 1}, {"arrows": "to", "color": "#555555", "dashes": false, "from": "p_e2de71e2-894f-4d35-9017-163b121caba2", "label": "", "title": "CONTAINS", "to": "p_731d1103-2821-4e67-9d39-e0cc5210fda0", "width": 1.5}, {"arrows": "to", "color": "#888888", "dashes": true, "from": "p_93ec14cf-ea53-4cbb-b91b-a65c1a4febf1", "label": "", "title": "NEXT", "to": "p_731d1103-2821-4e67-9d39-e0cc5210fda0", "width": 1}, {"arrows": "to", "color": "#555555", "dashes": false, "from": "p_e2de71e2-894f-4d35-9017-163b121caba2", "label": "", "title": "CONTAINS", "to": "p_aa9a1d4e-ca08-41f4-84e5-50622cea1f89", "width": 1.5}, {"arrows": "to", "color": "#555555", "dashes": false, "from": "p_aa9a1d4e-ca08-41f4-84e5-50622cea1f89", "label": "", "title": "CONTAINS", "to": "p_80b6d71e-ce4d-471a-bb64-2b72898070b5", "width": 1.5}, {"arrows": "to", "color": "#555555", "dashes": false, "from": "p_e2de71e2-894f-4d35-9017-163b121caba2", "label": "", "title": "CONTAINS", "to": "p_9d617c3b-588d-46ff-9f76-87ae50b36dae", "width": 1.5}, {"arrows": "to", "color": "#888888", "dashes": true, "from": "p_80b6d71e-ce4d-471a-bb64-2b72898070b5", "label": "", "title": "NEXT", "to": "p_9d617c3b-588d-46ff-9f76-87ae50b36dae", "width": 1}, {"arrows": "to", "color": "#555555", "dashes": false, "from": "p_e2de71e2-894f-4d35-9017-163b121caba2", "label": "", "title": "CONTAINS", "to": "p_e8028753-667e-4a79-87f2-3324351661f5", "width": 1.5}, {"arrows": "to", "color": "#888888", "dashes": true, "from": "p_9d617c3b-588d-46ff-9f76-87ae50b36dae", "label": "", "title": "NEXT", "to": "p_e8028753-667e-4a79-87f2-3324351661f5", "width": 1}, {"arrows": "to", "color": "#555555", "dashes": false, "from": "p_e2de71e2-894f-4d35-9017-163b121caba2", "label": "", "title": "CONTAINS", "to": "p_ce4f1bba-4961-4f30-aff7-3aa245346c79", "width": 1.5}, {"arrows": "to", "color": "#888888", "dashes": true, "from": "p_e8028753-667e-4a79-87f2-3324351661f5", "label": "", "title": "NEXT", "to": "p_ce4f1bba-4961-4f30-aff7-3aa245346c79", "width": 1}, {"arrows": "to", "color": "#555555", "dashes": false, "from": "p_e2de71e2-894f-4d35-9017-163b121caba2", "label": "", "title": "CONTAINS", "to": "p_7fcf3cbc-1d01-4790-88cb-77f97d4ad8f0", "width": 1.5}, {"arrows": "to", "color": "#555555", "dashes": false, "from": "p_7fcf3cbc-1d01-4790-88cb-77f97d4ad8f0", "label": "", "title": "CONTAINS", "to": "p_c1c2270c-2d03-4225-beea-13f46c4f4bcb", "width": 1.5}, {"arrows": "to", "color": "#555555", "dashes": false, "from": "p_e2de71e2-894f-4d35-9017-163b121caba2", "label": "", "title": "CONTAINS", "to": "p_044ffc2f-ade7-4364-9495-99343dc427bd", "width": 1.5}, {"arrows": "to", "color": "#888888", "dashes": true, "from": "p_c1c2270c-2d03-4225-beea-13f46c4f4bcb", "label": "", "title": "NEXT", "to": "p_044ffc2f-ade7-4364-9495-99343dc427bd", "width": 1}, {"arrows": "to", "color": "#555555", "dashes": false, "from": "p_e2de71e2-894f-4d35-9017-163b121caba2", "label": "", "title": "CONTAINS", "to": "p_48c9259c-bc37-4b13-b0c7-aa1beaa87bec", "width": 1.5}, {"arrows": "to", "color": "#888888", "dashes": true, "from": "p_044ffc2f-ade7-4364-9495-99343dc427bd", "label": "", "title": "NEXT", "to": "p_48c9259c-bc37-4b13-b0c7-aa1beaa87bec", "width": 1}, {"arrows": "to", "color": "#555555", "dashes": false, "from": "p_e2de71e2-894f-4d35-9017-163b121caba2", "label": "", "title": "CONTAINS", "to": "p_50270e98-40ac-494a-a6ef-9c62d46201d4", "width": 1.5}, {"arrows": "to", "color": "#888888", "dashes": true, "from": "p_48c9259c-bc37-4b13-b0c7-aa1beaa87bec", "label": "", "title": "NEXT", "to": "p_50270e98-40ac-494a-a6ef-9c62d46201d4", "width": 1}, {"arrows": "to", "color": "#555555", "dashes": false, "from": "p_e2de71e2-894f-4d35-9017-163b121caba2", "label": "", "title": "CONTAINS", "to": "p_37ba6fc5-4181-426f-89cc-f44511281409", "width": 1.5}, {"arrows": "to", "color": "#555555", "dashes": false, "from": "p_37ba6fc5-4181-426f-89cc-f44511281409", "label": "", "title": "CONTAINS", "to": "p_26b6fa39-dcf8-49b3-9a88-995db4a9d67d", "width": 1.5}, {"arrows": "to", "color": "#555555", "dashes": false, "from": "p_e2de71e2-894f-4d35-9017-163b121caba2", "label": "", "title": "CONTAINS", "to": "p_1cbad822-c501-4ca5-97ba-0e6dc493578e", "width": 1.5}, {"arrows": "to", "color": "#888888", "dashes": true, "from": "p_26b6fa39-dcf8-49b3-9a88-995db4a9d67d", "label": "", "title": "NEXT", "to": "p_1cbad822-c501-4ca5-97ba-0e6dc493578e", "width": 1}, {"arrows": "to", "color": "#555555", "dashes": false, "from": "p_e2de71e2-894f-4d35-9017-163b121caba2", "label": "", "title": "CONTAINS", "to": "p_8931d45a-1f80-43df-a8a1-7806289fe189", "width": 1.5}, {"arrows": "to", "color": "#888888", "dashes": true, "from": "p_1cbad822-c501-4ca5-97ba-0e6dc493578e", "label": "", "title": "NEXT", "to": "p_8931d45a-1f80-43df-a8a1-7806289fe189", "width": 1}, {"arrows": "to", "color": "#555555", "dashes": false, "from": "p_e2de71e2-894f-4d35-9017-163b121caba2", "label": "", "title": "CONTAINS", "to": "p_c6c45e84-0564-4c14-ae1f-c3ee4e0f107d", "width": 1.5}, {"arrows": "to", "color": "#888888", "dashes": true, "from": "p_8931d45a-1f80-43df-a8a1-7806289fe189", "label": "", "title": "NEXT", "to": "p_c6c45e84-0564-4c14-ae1f-c3ee4e0f107d", "width": 1}, {"arrows": "to", "color": "#555555", "dashes": false, "from": "sample_project_complex_sample", "label": "", "title": "CONTAINS", "to": "p_ae27b759-db84-477f-a442-046958e06867", "width": 1.5}, {"arrows": "to", "color": "#555555", "dashes": false, "from": "p_ae27b759-db84-477f-a442-046958e06867", "label": "", "title": "CONTAINS", "to": "p_2889cb3a-1727-4828-bee2-658a9fb92f2d", "width": 1.5}, {"arrows": "to", "color": "#e76f51", "dashes": false, "from": "p_3ad30fff-9a61-4e24-bebe-d454ae8dc2ef", "label": "", "title": "HAS_ENTITY", "to": "ner-spacy--7111801788919797324-1bb0d58e-4434-4e75-8633-d52ae4c5864d", "width": 2}, {"arrows": "to", "color": "#e76f51", "dashes": false, "from": "p_ea37b63f-2034-42bc-a7e0-0acb50e82a13", "label": "", "title": "HAS_ENTITY", "to": "ner-spacy--769683519652656321-8059290d-2b62-4434-86f4-a57b9a4e4266", "width": 2}, {"arrows": "to", "color": "#e76f51", "dashes": false, "from": "p_ea37b63f-2034-42bc-a7e0-0acb50e82a13", "label": "", "title": "HAS_ENTITY", "to": "ner-spacy--739479512998675860-36253c0b-56b3-4f8b-9297-4e8c8a447597", "width": 2}, {"arrows": "to", "color": "#e76f51", "dashes": false, "from": "p_ea37b63f-2034-42bc-a7e0-0acb50e82a13", "label": "", "title": "HAS_ENTITY", "to": "ner-spacy-2114093064939178576-5982bcb2-1706-46ab-84e6-797ba9b10fb4", "width": 2}, {"arrows": "to", "color": "#e76f51", "dashes": false, "from": "p_ea37b63f-2034-42bc-a7e0-0acb50e82a13", "label": "", "title": "HAS_ENTITY", "to": "ner-spacy--7111801788919797324-1bb0d58e-4434-4e75-8633-d52ae4c5864d", "width": 2}, {"arrows": "to", "color": "#e76f51", "dashes": false, "from": "p_decd47c0-166e-4fbe-8b76-ad120b58ddcf", "label": "", "title": "HAS_ENTITY", "to": "ner-spacy--769683519652656321-8059290d-2b62-4434-86f4-a57b9a4e4266", "width": 2}, {"arrows": "to", "color": "#e76f51", "dashes": false, "from": "p_decd47c0-166e-4fbe-8b76-ad120b58ddcf", "label": "", "title": "HAS_ENTITY", "to": "ner-spacy--739479512998675860-36253c0b-56b3-4f8b-9297-4e8c8a447597", "width": 2}, {"arrows": "to", "color": "#e76f51", "dashes": false, "from": "p_decd47c0-166e-4fbe-8b76-ad120b58ddcf", "label": "", "title": "HAS_ENTITY", "to": "ner-spacy-2114093064939178576-5982bcb2-1706-46ab-84e6-797ba9b10fb4", "width": 2}, {"arrows": "to", "color": "#e76f51", "dashes": false, "from": "p_304f79a5-5419-462b-a3ae-e9b2ca94d42e", "label": "", "title": "HAS_ENTITY", "to": "ner-spacy--769683519652656321-8059290d-2b62-4434-86f4-a57b9a4e4266", "width": 2}, {"arrows": "to", "color": "#e76f51", "dashes": false, "from": "p_2c8d2ccf-d3f4-441c-919b-3904a2e4f9fc", "label": "", "title": "HAS_ENTITY", "to": "ner-spacy--739479512998675860-36253c0b-56b3-4f8b-9297-4e8c8a447597", "width": 2}, {"arrows": "to", "color": "#e76f51", "dashes": false, "from": "p_0d30ed5c-28bc-4980-bbc7-4aee89efd23f", "label": "", "title": "HAS_ENTITY", "to": "ner-spacy-2114093064939178576-5982bcb2-1706-46ab-84e6-797ba9b10fb4", "width": 2}, {"arrows": "to", "color": "#e76f51", "dashes": false, "from": "p_7fcf3cbc-1d01-4790-88cb-77f97d4ad8f0", "label": "", "title": "HAS_ENTITY", "to": "ner-spacy--7111801788919797324-1bb0d58e-4434-4e75-8633-d52ae4c5864d", "width": 2}, {"arrows": "to", "color": "#e76f51", "dashes": false, "from": "p_48c9259c-bc37-4b13-b0c7-aa1beaa87bec", "label": "", "title": "HAS_ENTITY", "to": "ner-spacy--7111801788919797324-1bb0d58e-4434-4e75-8633-d52ae4c5864d", "width": 2}, {"arrows": "to", "color": "#e76f51", "dashes": false, "from": "p_2889cb3a-1727-4828-bee2-658a9fb92f2d", "label": "", "title": "HAS_ENTITY", "to": "ner-spacy--5620121989283618061-a0530946-49ee-4c39-9417-0e0a555ed1a0", "width": 2}, {"arrows": "to", "color": "#e76f51", "dashes": false, "from": "p_2889cb3a-1727-4828-bee2-658a9fb92f2d", "label": "", "title": "HAS_ENTITY", "to": "ner-spacy-2114093064939178576-5982bcb2-1706-46ab-84e6-797ba9b10fb4", "width": 2}, {"arrows": "to", "color": "#e76f51", "dashes": false, "from": "p_2889cb3a-1727-4828-bee2-658a9fb92f2d", "label": "", "title": "HAS_ENTITY", "to": "ner-spacy--739479512998675860-36253c0b-56b3-4f8b-9297-4e8c8a447597", "width": 2}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "barnesHut": {
+            "avoidOverlap": 0,
+            "centralGravity": 0.3,
+            "damping": 0.5,
+            "gravitationalConstant": -8000,
+            "springConstant": 0.04,
+            "springLength": 200
+        },
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

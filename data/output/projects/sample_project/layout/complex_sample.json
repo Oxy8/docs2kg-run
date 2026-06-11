@@ -1,0 +1,406 @@
+{
+  "filename": "complex_sample",
+  "data": [
+    {
+      "id": "p_3ad30fff-9a61-4e24-bebe-d454ae8dc2ef",
+      "text": "Acme Corp Executive Report",
+      "label": "H2",
+      "entities": [
+        {
+          "id": "ner-spacy--7111801788919797324-1bb0d58e-4434-4e75-8633-d52ae4c5864d",
+          "start": 0,
+          "end": 9,
+          "text": "acme corp",
+          "label": "Organization",
+          "confidence": 0.95,
+          "method": "NERSpacyMatcher"
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "p_e2de71e2-894f-4d35-9017-163b121caba2",
+      "text": "1. Organizational Structure",
+      "label": "H2",
+      "entities": [],
+      "relations": []
+    },
+    {
+      "id": "p_909803a6-ba6f-44b1-a304-1dc62759259f",
+      "text": "Below is the hierarchical nesting mapping of departments and their active allocations.",
+      "label": "P",
+      "entities": [],
+      "relations": []
+    },
+    {
+      "id": "p_ea37b63f-2034-42bc-a7e0-0acb50e82a13",
+      "text": "Department\nDetails & Projects\nDetails & Projects\nDetails & Projects\n\n\n\n\nEngineering\nProject Name Apollo Project\nLead Alice\nBudget $1.2M\n\n\n\nAres Initiative\nCharlie\n$800K\n\n\nOperations\nService\nProvider\nSLA\n\n\nOperations\nCloud Hosting\nAcme Corp\n99.9%\n\n\nOperations\nSecurity Audit\nSafeGuard\n99.99%",
+      "label": "TABLE",
+      "entities": [
+        {
+          "id": "ner-spacy--769683519652656321-8059290d-2b62-4434-86f4-a57b9a4e4266",
+          "start": 72,
+          "end": 83,
+          "text": "engineering",
+          "label": "Department",
+          "confidence": 0.95,
+          "method": "NERSpacyMatcher"
+        },
+        {
+          "id": "ner-spacy--739479512998675860-36253c0b-56b3-4f8b-9297-4e8c8a447597",
+          "start": 97,
+          "end": 111,
+          "text": "apollo project",
+          "label": "Project",
+          "confidence": 0.95,
+          "method": "NERSpacyMatcher"
+        },
+        {
+          "id": "ner-spacy-2114093064939178576-5982bcb2-1706-46ab-84e6-797ba9b10fb4",
+          "start": 117,
+          "end": 122,
+          "text": "alice",
+          "label": "Person",
+          "confidence": 0.95,
+          "method": "NERSpacyMatcher"
+        },
+        {
+          "id": "ner-spacy--4543164775987690956-34f69f56-9d02-48df-bfdc-6c7e038506a2",
+          "start": 230,
+          "end": 239,
+          "text": "acme corp",
+          "label": "Organization",
+          "confidence": 0.95,
+          "method": "NERSpacyMatcher"
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "p_073ef4d1-e778-46c4-b69c-0be78177205e",
+      "text": "Department\nDetails & Projects\nDetails & Projects\nDetails & Projects",
+      "label": "TR",
+      "entities": [],
+      "relations": []
+    },
+    {
+      "id": "p_a47d3806-fa07-45b7-b126-b27bf50aeb9f",
+      "text": "Department",
+      "label": "TH",
+      "entities": [],
+      "relations": []
+    },
+    {
+      "id": "p_7d0ddb31-3c55-4812-803b-ba1d9cc9e4c8",
+      "text": "Details & Projects",
+      "label": "TH",
+      "entities": [],
+      "relations": []
+    },
+    {
+      "id": "p_7bdafee3-238a-491e-b610-e27921901302",
+      "text": "Details & Projects",
+      "label": "TH",
+      "entities": [],
+      "relations": []
+    },
+    {
+      "id": "p_6efa1926-feb5-4740-ac37-2e1c5ff461d9",
+      "text": "Details & Projects",
+      "label": "TH",
+      "entities": [],
+      "relations": []
+    },
+    {
+      "id": "p_decd47c0-166e-4fbe-8b76-ad120b58ddcf",
+      "text": "Engineering\nProject Name Apollo Project\nLead Alice\nBudget $1.2M",
+      "label": "TR",
+      "entities": [
+        {
+          "id": "ner-spacy-7450930356972427605-fa962177-30e0-4362-9099-3d8f11b4e923",
+          "start": 0,
+          "end": 11,
+          "text": "engineering",
+          "label": "Department",
+          "confidence": 0.95,
+          "method": "NERSpacyMatcher"
+        },
+        {
+          "id": "ner-spacy-2712577411394513063-10e0e6fb-0b77-43d7-be82-6bab4349d736",
+          "start": 25,
+          "end": 39,
+          "text": "apollo project",
+          "label": "Project",
+          "confidence": 0.95,
+          "method": "NERSpacyMatcher"
+        },
+        {
+          "id": "ner-spacy-6044824578679394799-b0115a14-6386-4b8a-afdf-f3be6e130095",
+          "start": 45,
+          "end": 50,
+          "text": "alice",
+          "label": "Person",
+          "confidence": 0.95,
+          "method": "NERSpacyMatcher"
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "p_304f79a5-5419-462b-a3ae-e9b2ca94d42e",
+      "text": "Engineering",
+      "label": "TD",
+      "entities": [
+        {
+          "id": "ner-spacy-7450930356972427605-4c20f2fc-0ea8-4111-b790-939ffe68a25f",
+          "start": 0,
+          "end": 11,
+          "text": "engineering",
+          "label": "Department",
+          "confidence": 0.95,
+          "method": "NERSpacyMatcher"
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "p_2c8d2ccf-d3f4-441c-919b-3904a2e4f9fc",
+      "text": "Project Name Apollo Project",
+      "label": "TD",
+      "entities": [
+        {
+          "id": "ner-spacy--5859188748269691456-3269c37b-4750-47f4-ab2d-d6d5812feaa1",
+          "start": 13,
+          "end": 27,
+          "text": "apollo project",
+          "label": "Project",
+          "confidence": 0.95,
+          "method": "NERSpacyMatcher"
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "p_0d30ed5c-28bc-4980-bbc7-4aee89efd23f",
+      "text": "Lead Alice",
+      "label": "TD",
+      "entities": [
+        {
+          "id": "ner-spacy-583421137631743639-6d45c20b-dc7b-4c40-a114-094aea097fa4",
+          "start": 5,
+          "end": 10,
+          "text": "alice",
+          "label": "Person",
+          "confidence": 0.95,
+          "method": "NERSpacyMatcher"
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "p_6cd84d72-7c5f-4827-ad48-d51ebf57b950",
+      "text": "Budget $1.2M",
+      "label": "TD",
+      "entities": [],
+      "relations": []
+    },
+    {
+      "id": "p_3164cfe8-45f2-4916-a7a1-52ccc9c1f420",
+      "text": "Ares Initiative\nCharlie\n$800K",
+      "label": "TR",
+      "entities": [],
+      "relations": []
+    },
+    {
+      "id": "p_e2928920-cd29-4d11-bef1-b2673f2d745b",
+      "text": "Ares Initiative",
+      "label": "TD",
+      "entities": [],
+      "relations": []
+    },
+    {
+      "id": "p_93ec14cf-ea53-4cbb-b91b-a65c1a4febf1",
+      "text": "Charlie",
+      "label": "TD",
+      "entities": [],
+      "relations": []
+    },
+    {
+      "id": "p_731d1103-2821-4e67-9d39-e0cc5210fda0",
+      "text": "$800K",
+      "label": "TD",
+      "entities": [],
+      "relations": []
+    },
+    {
+      "id": "p_aa9a1d4e-ca08-41f4-84e5-50622cea1f89",
+      "text": "Operations\nService\nProvider\nSLA",
+      "label": "TR",
+      "entities": [],
+      "relations": []
+    },
+    {
+      "id": "p_80b6d71e-ce4d-471a-bb64-2b72898070b5",
+      "text": "Operations",
+      "label": "TD",
+      "entities": [],
+      "relations": []
+    },
+    {
+      "id": "p_9d617c3b-588d-46ff-9f76-87ae50b36dae",
+      "text": "Service",
+      "label": "TD",
+      "entities": [],
+      "relations": []
+    },
+    {
+      "id": "p_e8028753-667e-4a79-87f2-3324351661f5",
+      "text": "Provider",
+      "label": "TD",
+      "entities": [],
+      "relations": []
+    },
+    {
+      "id": "p_ce4f1bba-4961-4f30-aff7-3aa245346c79",
+      "text": "SLA",
+      "label": "TD",
+      "entities": [],
+      "relations": []
+    },
+    {
+      "id": "p_7fcf3cbc-1d01-4790-88cb-77f97d4ad8f0",
+      "text": "Operations\nCloud Hosting\nAcme Corp\n99.9%",
+      "label": "TR",
+      "entities": [
+        {
+          "id": "ner-spacy--6638859988586240134-39d2c7fa-02bc-4585-8af7-6cbcb3da30f6",
+          "start": 25,
+          "end": 34,
+          "text": "acme corp",
+          "label": "Organization",
+          "confidence": 0.95,
+          "method": "NERSpacyMatcher"
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "p_c1c2270c-2d03-4225-beea-13f46c4f4bcb",
+      "text": "Operations",
+      "label": "TD",
+      "entities": [],
+      "relations": []
+    },
+    {
+      "id": "p_044ffc2f-ade7-4364-9495-99343dc427bd",
+      "text": "Cloud Hosting",
+      "label": "TD",
+      "entities": [],
+      "relations": []
+    },
+    {
+      "id": "p_48c9259c-bc37-4b13-b0c7-aa1beaa87bec",
+      "text": "Acme Corp",
+      "label": "TD",
+      "entities": [
+        {
+          "id": "ner-spacy--7111801788919797324-9926de7e-e20c-4e45-bc19-ebd9ad4625fe",
+          "start": 0,
+          "end": 9,
+          "text": "acme corp",
+          "label": "Organization",
+          "confidence": 0.95,
+          "method": "NERSpacyMatcher"
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "p_50270e98-40ac-494a-a6ef-9c62d46201d4",
+      "text": "99.9%",
+      "label": "TD",
+      "entities": [],
+      "relations": []
+    },
+    {
+      "id": "p_37ba6fc5-4181-426f-89cc-f44511281409",
+      "text": "Operations\nSecurity Audit\nSafeGuard\n99.99%",
+      "label": "TR",
+      "entities": [],
+      "relations": []
+    },
+    {
+      "id": "p_26b6fa39-dcf8-49b3-9a88-995db4a9d67d",
+      "text": "Operations",
+      "label": "TD",
+      "entities": [],
+      "relations": []
+    },
+    {
+      "id": "p_1cbad822-c501-4ca5-97ba-0e6dc493578e",
+      "text": "Security Audit",
+      "label": "TD",
+      "entities": [],
+      "relations": []
+    },
+    {
+      "id": "p_8931d45a-1f80-43df-a8a1-7806289fe189",
+      "text": "SafeGuard",
+      "label": "TD",
+      "entities": [],
+      "relations": []
+    },
+    {
+      "id": "p_c6c45e84-0564-4c14-ae1f-c3ee4e0f107d",
+      "text": "99.99%",
+      "label": "TD",
+      "entities": [],
+      "relations": []
+    },
+    {
+      "id": "p_ae27b759-db84-477f-a442-046958e06867",
+      "text": "2. Strategic Goals",
+      "label": "H2",
+      "entities": [],
+      "relations": []
+    },
+    {
+      "id": "p_2889cb3a-1727-4828-bee2-658a9fb92f2d",
+      "text": "Operations are supervised by Bob. They manage beta group clients. Alice manages the Apollo Project and leads strategic operations.",
+      "label": "P",
+      "entities": [
+        {
+          "id": "ner-spacy--5620121989283618061-a0530946-49ee-4c39-9417-0e0a555ed1a0",
+          "start": 29,
+          "end": 32,
+          "text": "bob",
+          "label": "Person",
+          "confidence": 0.95,
+          "method": "NERSpacyMatcher"
+        },
+        {
+          "id": "ner-spacy-2271795370893865505-b9a7ea96-8ce4-47b1-9710-8b3521bc9d5b",
+          "start": 66,
+          "end": 71,
+          "text": "alice",
+          "label": "Person",
+          "confidence": 0.95,
+          "method": "NERSpacyMatcher"
+        },
+        {
+          "id": "ner-spacy-1620735995374118076-b700b7df-68a3-4083-b3de-3785a9c3f8b7",
+          "start": 84,
+          "end": 98,
+          "text": "apollo project",
+          "label": "Project",
+          "confidence": 0.95,
+          "method": "NERSpacyMatcher"
+        }
+      ],
+      "relations": []
+    }
+  ],
+  "metadata": {
+    "title": "complex_sample"
+  }
+}

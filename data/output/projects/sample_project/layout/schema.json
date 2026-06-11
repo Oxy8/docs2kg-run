@@ -1,0 +1,111 @@
+{
+  "H1": [
+    "H2",
+    "P",
+    "LI",
+    "OL",
+    "UL",
+    "QUOTE",
+    "CODE",
+    "TABLE"
+  ],
+  "H2": [
+    "H3",
+    "P",
+    "LI",
+    "OL",
+    "UL",
+    "QUOTE",
+    "CODE",
+    "TABLE"
+  ],
+  "H3": [
+    "H4",
+    "P",
+    "LI",
+    "OL",
+    "UL",
+    "QUOTE",
+    "CODE",
+    "TABLE"
+  ],
+  "H4": [
+    "H5",
+    "P",
+    "LI",
+    "OL",
+    "UL",
+    "QUOTE",
+    "CODE",
+    "TABLE"
+  ],
+  "H5": [
+    "H6",
+    "P",
+    "LI",
+    "OL",
+    "UL",
+    "QUOTE",
+    "CODE",
+    "TABLE"
+  ],
+  "H6": [
+    "P",
+    "LI",
+    "OL",
+    "UL",
+    "QUOTE",
+    "CODE",
+    "TABLE"
+  ],
+  "P": [
+    "P",
+    "LI",
+    "OL",
+    "UL",
+    "QUOTE",
+    "CODE",
+    "TABLE"
+  ],
+  "LI": [
+    "LI",
+    "OL",
+    "UL",
+    "P"
+  ],
+  "OL": [
+    "LI",
+    "OL",
+    "UL",
+    "P"
+  ],
+  "UL": [
+    "LI",
+    "OL",
+    "UL",
+    "P"
+  ],
+  "QUOTE": [
+    "P",
+    "LI",
+    "OL",
+    "UL",
+    "CODE"
+  ],
+  "CODE": [
+    "CODE"
+  ],
+  "TABLE": [
+    "TR"
+  ],
+  "TR": [
+    "TD",
+    "TH"
+  ],
+  "TD": [
+    "P"
+  ],
+  "TH": [
+    "P"
+  ]
+}
